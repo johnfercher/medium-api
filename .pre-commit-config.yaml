@@ -1,0 +1,7 @@
+repos:
+  - repo: https://github.com/fe3dback/go-arch-lint
+    rev: master
+    hooks:
+      - id: go-arch-lint-check
+      - id: go-arch-lint-graph
+        args: ['--include-vendors=true', '--out=docs/go-arch-lint-graph.svg']
