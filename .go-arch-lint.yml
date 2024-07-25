@@ -1,0 +1,91 @@
+version: 3
+
+allow:
+  deepScan: false
+
+excludeFiles:
+  - "^.*_test\\.go$"
+  - "^.*\/test\/.*$"
+  - "api.go"
+  - "internal/internal.go"
+
+components:
+  models:           { in: internal/core/models/** }
+  ports:            { in: internal/core/ports/** }
+  drivers:          { in: internal/adapters/drivers/** }
+  drivens:          { in: internal/adapters/drivens/** }
+  services:         { in: internal/services/** }
+  cmdapi:           { in: cmd/api/** }
+  api:              { in: pkg/api/** }
+  mocks:            { in: mocks/** }
+  fixture:          { in: fixture/** }
+  pkg:              { in: pkg/** }
+
+vendors:
+  assert:         { in: github.com/stretchr/testify/assert }
+  mock:           { in: github.com/stretchr/testify/mock }
+  uuid:           { in: github.com/google/uuid  }
+  chi:            { in: github.com/go-chi/chi/** }
+  prometheus:     { in: github.com/prometheus/** }
+  yaml:           { in: gopkg.in/yaml.v2 }
+  gorm:           { in: gorm.io/** }
+
+commonVendors:
+  - uuid
+  - assert
+  - mock
+
+deps:
+  ports:
+    mayDependOn:
+      - models
+
+  drivers:
+    canUse:
+      - chi
+    mayDependOn:
+      - api
+      - models
+      - ports
+
+  drivens:
+    canUse:
+      - gorm
+    mayDependOn:
+      - models
+
+  services:
+    mayDependOn:
+      - models
+      - ports
+
+  cmdapi:
+    canUse:
+      - chi
+    mayDependOn:
+      - drivers
+      - drivens
+      - services
+      - pkg
+
+  api:
+    mayDependOn:
+      - pkg
+
+  mocks:
+    mayDependOn:
+      - api
+      - models
+
+  fixture:
+    mayDependOn:
+      - models
+      - drivers
+
+  pkg:
+    canUse:
+      - prometheus
+      - gorm
+      - yaml
+    mayDependOn:
+      - pkg
