@@ -27,26 +27,18 @@ lint:
 arch-lint:
 	go-arch-lint check
 
-.PHONY: install
-install:
-	bash shell/install.sh
-
-.PHONY: docs
-docs:
-	docsify serve docs/
-
-.PHONY: godoc
-godoc:
-	godoc -http=127.0.0.1:6060
-
 .PHONY: mocks
 mocks:
 	rm -R mocks || true
 	mockery
 	make fmt
 
+.PHONY: proto
+proto:
+	protoc --go_out=. --go-grpc_out=. proto/contracts.proto
+
 build-docker:
 	docker build -t product-api .
 
 run-docker:
-	docker run -p 8081:8081 product-api
+	docker run -p 8081:8081 -p 8082:8082 product-api

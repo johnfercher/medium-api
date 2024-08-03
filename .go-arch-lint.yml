@@ -8,6 +8,7 @@ excludeFiles:
   - "^.*\/test\/.*$"
   - "api.go"
   - "internal/internal.go"
+  - "cmd/call/main.go"
 
 components:
   models:           { in: internal/core/models/** }
@@ -16,6 +17,7 @@ components:
   drivens:          { in: internal/adapters/drivens/** }
   services:         { in: internal/services/** }
   cmdapi:           { in: cmd/api/** }
+  wireup:           { in: internal/wireup }
   api:              { in: pkg/api/** }
   mocks:            { in: mocks/** }
   fixture:          { in: fixture/** }
@@ -26,6 +28,8 @@ vendors:
   mock:           { in: github.com/stretchr/testify/mock }
   uuid:           { in: github.com/google/uuid  }
   chi:            { in: github.com/go-chi/chi/** }
+  grpc:           { in: google.golang.org/grpc** }
+  protobuf:       { in: google.golang.org/protobuf** }
   prometheus:     { in: github.com/prometheus/** }
   yaml:           { in: gopkg.in/yaml.v2 }
   gorm:           { in: gorm.io/** }
@@ -43,6 +47,8 @@ deps:
   drivers:
     canUse:
       - chi
+      - grpc
+      - protobuf
     mayDependOn:
       - api
       - models
@@ -60,13 +66,11 @@ deps:
       - ports
 
   cmdapi:
-    canUse:
-      - chi
     mayDependOn:
-      - drivers
-      - drivens
+      - wireup
       - services
       - pkg
+      - drivens
 
   api:
     mayDependOn:
@@ -88,4 +92,15 @@ deps:
       - gorm
       - yaml
     mayDependOn:
+      - pkg
+
+  wireup:
+    canUse:
+      - chi
+      - grpc
+    mayDependOn:
+      - ports
+      - drivers
+      - drivens
+      - services
       - pkg

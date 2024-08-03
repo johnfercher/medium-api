@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+option go_package = "internal/adapters/drivers/grpc;grpc";
+
+message Product{
+   string id = 1;
+   string name = 2;
+   string type = 3;
+   int64 quantity = 4;
+}
+
+message CreateProduct {
+   string name = 1;
+   string type = 2;
+   int64 quantity = 3;
+}
+
+message ID {
+   string id = 1;
+}
+
+message Type {
+   string type = 1;
+}
+
+message ProductResponse {
+   Product product = 1;
+}
+
+message ProductsResponse {
+  repeated Product products = 1;
+}
+
+message Empty {
+
+}
+
+service CreateProductHandler{
+  rpc Create(CreateProduct) returns (ProductResponse){}
+}
+
+service DeleteProductHandler{
+  rpc Delete(ID) returns(Empty){}
+}
+
+service GetProductHandler{
+  rpc Get(ID) returns (ProductResponse){}
+}
+
+service SearchProductHandler{
+  rpc Search(Type) returns (ProductsResponse){}
+}
+
+service UpdateProductHandler{
+  rpc Update(Product) returns (ProductResponse){}
+}
