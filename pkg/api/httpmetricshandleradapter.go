@@ -10,7 +10,7 @@ import (
 	"github.com/johnfercher/medium-api/pkg/observability/metrics/endpointmetrics"
 )
 
-type HandlerAdapter interface {
+type HttpHandlerAdapter interface {
 	AdaptHandler() func(w http.ResponseWriter, r *http.Request)
 }
 

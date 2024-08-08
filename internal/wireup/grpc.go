@@ -12,7 +12,8 @@ import (
 
 func RunGRPC(productService ports.ProductService) {
 	fmt.Println("Init GRPC server")
-	server := googleGrpc.NewServer()
+
+	server := googleGrpc.NewServer(googleGrpc.StreamInterceptor(Interceptor))
 
 	addr := "0.0.0.0:8082"
 
@@ -43,4 +44,8 @@ func RunGRPC(productService ports.ProductService) {
 	if err := server.Serve(listen); err != nil {
 		panic(err)
 	}
+}
+
+func Interceptor(srv any, ss googleGrpc.ServerStream, info *googleGrpc.StreamServerInfo, handler googleGrpc.StreamHandler) error {
+	err := handler(srv, ss)
 }
