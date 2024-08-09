@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net"
 
+	"github.com/johnfercher/medium-api/pkg/api"
+
 	"github.com/johnfercher/medium-api/internal/adapters/drivers/grpc"
 	"github.com/johnfercher/medium-api/internal/core/ports"
 	googleGrpc "google.golang.org/grpc"
@@ -12,7 +14,10 @@ import (
 
 func RunGRPC(productService ports.ProductService) {
 	fmt.Println("Init GRPC server")
-	server := googleGrpc.NewServer()
+
+	metricsInterceptor := api.NewInterceptor()
+
+	server := googleGrpc.NewServer(googleGrpc.ChainUnaryInterceptor(metricsInterceptor.Intercept))
 
 	addr := "0.0.0.0:8082"
 

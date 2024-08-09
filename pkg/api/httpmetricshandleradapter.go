@@ -10,7 +10,7 @@ import (
 	"github.com/johnfercher/medium-api/pkg/observability/metrics/endpointmetrics"
 )
 
-type HandlerAdapter interface {
+type HTTPHandlerAdapter interface {
 	AdaptHandler() func(w http.ResponseWriter, r *http.Request)
 }
 
@@ -49,6 +49,7 @@ func (m *metricsHandlerAdapter) execute(w http.ResponseWriter, r *http.Request) 
 // nolint:gomnd // magic number
 func (m *metricsHandlerAdapter) metrify(response apiresponse.APIResponse, err apierror.APIError, latencyInMs float64) {
 	metrics := endpointmetrics.Metrics{
+		Protocol: "REST",
 		Latency:  latencyInMs,
 		Endpoint: m.handler.Name(),
 		Verb:     m.handler.Verb(),
