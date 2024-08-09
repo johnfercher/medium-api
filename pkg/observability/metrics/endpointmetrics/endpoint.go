@@ -11,6 +11,7 @@ import (
 
 const (
 	// Labels.
+	protocol            string = "protocol"
 	endpoint            string = "endpoint"
 	verb                string = "verb"
 	pattern             string = "pattern"
@@ -29,7 +30,8 @@ var Helps = map[string]string{}
 
 type Metrics struct {
 	// Metric
-	Latency float64
+	Protocol string
+	Latency  float64
 
 	// Labels
 	Endpoint             string
@@ -44,6 +46,7 @@ type Metrics struct {
 
 func Send(metrics Metrics) {
 	labels := map[string]string{
+		protocol:            metrics.Protocol,
 		endpoint:            metrics.Endpoint,
 		verb:                metrics.Verb,
 		pattern:             metrics.Pattern,

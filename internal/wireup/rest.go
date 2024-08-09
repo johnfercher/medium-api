@@ -43,7 +43,7 @@ func RunREST(productService ports.ProductService) {
 		r.MethodFunc(handler.Verb(), handler.Pattern(), metricsAdapter.AdaptHandler())
 	}
 
-	fmt.Printf("rest 0.0.0.0:8181...\n")
+	fmt.Printf("rest 0.0.0.0:8081...\n")
 
 	if err := http.ListenAndServe(":8081", r); err == nil {
 		panic(err)
