@@ -1,8 +1,11 @@
 package wireup
 
 import (
-	"fmt"
+	"context"
 	"net"
+
+	"github.com/johnfercher/medium-api/pkg/observability/log"
+	"github.com/johnfercher/medium-api/pkg/observability/log/field"
 
 	"github.com/johnfercher/medium-api/pkg/api"
 
@@ -12,12 +15,13 @@ import (
 	"google.golang.org/grpc/reflection"
 )
 
-func RunGRPC(productService ports.ProductService) {
-	fmt.Println("Init GRPC server")
+func RunGRPC(ctx context.Context, productService ports.ProductService) {
+	log.Info(ctx, "Init GRPC server")
 
-	metricsInterceptor := api.NewInterceptor()
+	loggerIntercepter := api.NewLoggerInterceptor()
+	metricsInterceptor := api.NewMetricsInterceptor()
 
-	server := googleGrpc.NewServer(googleGrpc.ChainUnaryInterceptor(metricsInterceptor.Intercept))
+	server := googleGrpc.NewServer(googleGrpc.ChainUnaryInterceptor(loggerIntercepter.Intercept, metricsInterceptor.Intercept))
 
 	addr := "0.0.0.0:8082"
 
@@ -43,7 +47,7 @@ func RunGRPC(productService ports.ProductService) {
 
 	reflection.Register(server)
 
-	fmt.Printf("grpc %s...\n", addr)
+	log.Info(ctx, "started grpc", field.String("addr", addr))
 
 	if err := server.Serve(listen); err != nil {
 		panic(err)

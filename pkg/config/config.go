@@ -6,6 +6,8 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/sirupsen/logrus"
+
 	"gopkg.in/yaml.v2"
 )
 
@@ -19,6 +21,9 @@ type Config struct {
 		User     string `yaml:"user"`
 		Password string `yaml:"password"`
 	} `yaml:"mysql"`
+	Log struct {
+		Level logrus.Level `yaml:"level"`
+	} `yaml:"log"`
 }
 
 func (c *Config) Print() {

@@ -3,6 +3,9 @@ package rest
 import (
 	"net/http"
 
+	"github.com/johnfercher/medium-api/pkg/observability/log"
+	"github.com/johnfercher/medium-api/pkg/observability/log/field"
+
 	"github.com/johnfercher/medium-api/internal/core/ports"
 	"github.com/johnfercher/medium-api/pkg/api/apierror"
 	"github.com/johnfercher/medium-api/pkg/api/apiresponse"
@@ -29,6 +32,8 @@ func (p *updateProduct) Handle(r *http.Request) (apiresponse.APIResponse, apierr
 
 	updateProduct, err := DecodeProductFromBodyAndURI(r)
 	if err != nil {
+		log.Error(ctx, "could not decode product update", field.Error(err),
+			field.StatusCode(http.StatusBadRequest))
 		return nil, apierror.New(err.Error(), http.StatusBadRequest)
 	}
 

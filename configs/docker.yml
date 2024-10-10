@@ -3,3 +3,6 @@ mysql:
   db: "ProductDb"
   user: "AdminUser"
   password: "AdminPassword"
+
+log:
+  level: "info"

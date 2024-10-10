@@ -3,6 +3,9 @@ package services
 import (
 	"context"
 
+	"github.com/johnfercher/medium-api/pkg/observability/log"
+	"github.com/johnfercher/medium-api/pkg/observability/log/field"
+
 	"github.com/google/uuid"
 	"github.com/johnfercher/medium-api/internal/core/models"
 	"github.com/johnfercher/medium-api/internal/core/ports"
@@ -29,6 +32,7 @@ func (p *ProductService) Search(ctx context.Context, productType string) ([]*mod
 func (p *ProductService) Create(ctx context.Context, product *models.Product) (*models.Product, error) {
 	id, err := uuid.NewUUID()
 	if err != nil {
+		log.Error(ctx, "could not create product id", field.Error(err))
 		return nil, err
 	}
 

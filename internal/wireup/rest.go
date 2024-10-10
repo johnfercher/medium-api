@@ -1,11 +1,13 @@
 package wireup
 
 import (
-	"fmt"
+	"context"
 	"net/http"
 
+	"github.com/johnfercher/medium-api/pkg/observability/log"
+	"github.com/johnfercher/medium-api/pkg/observability/log/field"
+
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
 	"github.com/johnfercher/medium-api/internal/adapters/drivers/rest"
 	"github.com/johnfercher/medium-api/internal/core/ports"
 	"github.com/johnfercher/medium-api/pkg/api"
@@ -13,10 +15,11 @@ import (
 )
 
 // nolint:gomnd // magic number
-func RunREST(productService ports.ProductService) {
-	fmt.Println("Init REST server")
+func RunREST(ctx context.Context, productService ports.ProductService) {
+	log.Info(ctx, "Init REST server")
 	r := chi.NewRouter()
-	r.Use(middleware.Logger)
+
+	r.Use(log.ContextMiddleware)
 
 	handlers := []api.HTTPHandler{}
 
@@ -43,9 +46,11 @@ func RunREST(productService ports.ProductService) {
 		r.MethodFunc(handler.Verb(), handler.Pattern(), metricsAdapter.AdaptHandler())
 	}
 
-	fmt.Printf("rest 0.0.0.0:8081...\n")
+	addr := ":8081"
 
-	if err := http.ListenAndServe(":8081", r); err == nil {
+	log.Info(ctx, "started rest", field.String("addr", addr))
+
+	if err := http.ListenAndServe(addr, r); err == nil {
 		panic(err)
 	}
 }
