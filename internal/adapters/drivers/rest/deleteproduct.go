@@ -3,6 +3,9 @@ package rest
 import (
 	"net/http"
 
+	"github.com/johnfercher/medium-api/pkg/observability/log"
+	"github.com/johnfercher/medium-api/pkg/observability/log/field"
+
 	"github.com/johnfercher/medium-api/internal/core/ports"
 	"github.com/johnfercher/medium-api/pkg/api/apierror"
 	"github.com/johnfercher/medium-api/pkg/api/apiresponse"
@@ -29,6 +32,8 @@ func (p *deleteProduct) Handle(r *http.Request) (apiresponse.APIResponse, apierr
 
 	id, err := DecodeStringIDFromURI(r)
 	if err != nil {
+		log.Error(ctx, "could not get id from uri", field.Error(err),
+			field.StatusCode(http.StatusBadRequest))
 		return nil, apierror.New(err.Error(), http.StatusBadRequest)
 	}
 

@@ -1,8 +1,11 @@
 package apierror
 
+import "fmt"
+
 type APIError interface {
 	Name() string
 	Code() int
+	Error() string
 }
 
 type apiError struct {
@@ -20,4 +23,8 @@ func (a *apiError) Name() string {
 
 func (a *apiError) Code() int {
 	return a.code
+}
+
+func (a *apiError) Error() string {
+	return fmt.Sprintf("%s (%d)", a.name, a.code)
 }

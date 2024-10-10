@@ -4,6 +4,9 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/johnfercher/medium-api/pkg/observability/log"
+	"github.com/johnfercher/medium-api/pkg/observability/log/field"
+
 	"github.com/johnfercher/medium-api/pkg/api"
 	"github.com/johnfercher/medium-api/pkg/api/apierror"
 	"github.com/johnfercher/medium-api/pkg/api/apiresponse"
@@ -26,10 +29,12 @@ func NewChaosHTTPHandler(inner api.HTTPHandler, baseSleepMs float64) *chaosHTTPH
 }
 
 func (c *chaosHTTPHandler) Handle(r *http.Request) (apiresponse.APIResponse, apierror.APIError) {
+	ctx := r.Context()
 	c.sleep(c.baseSleepMs)
 
 	err := c.generateError()
 	if err != nil {
+		log.Error(ctx, "injected error", field.Error(err))
 		return nil, err
 	}
 

@@ -1,8 +1,12 @@
 package main
 
 import (
+	"context"
+	"fmt"
 	"os"
 	"sync"
+
+	"github.com/johnfercher/medium-api/pkg/observability/log"
 
 	"github.com/johnfercher/medium-api/internal/wireup"
 
@@ -20,7 +24,11 @@ func main() {
 		panic(err)
 	}
 
-	db, err := mysqldriver.Start(cfg.Mysql.URL, cfg.Mysql.DB, cfg.Mysql.User, cfg.Mysql.Password)
+	logger := log.NewLogger(cfg.Log.Level)
+	ctx := log.AddContext(context.Background(), logger)
+	log.Info(ctx, fmt.Sprintf("loaded cfgs %v", cfg))
+
+	db, err := mysqldriver.Start(ctx, cfg.Mysql.URL, cfg.Mysql.DB, cfg.Mysql.User, cfg.Mysql.Password)
 	if err != nil {
 		panic(err)
 	}
@@ -28,19 +36,19 @@ func main() {
 	productRepository := mysql.NewRepository(db)
 	productService := services.New(productRepository)
 
-	endpointmetrics.Start()
+	endpointmetrics.Start(ctx)
 
 	var wg sync.WaitGroup
 	wg.Add(2)
 
 	go func() {
 		defer wg.Done()
-		wireup.RunREST(productService)
+		wireup.RunREST(ctx, productService)
 	}()
 
 	go func() {
 		defer wg.Done()
-		wireup.RunGRPC(productService)
+		wireup.RunGRPC(ctx, productService)
 	}()
 	wg.Wait()
 }

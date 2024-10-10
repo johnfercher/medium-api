@@ -8,13 +8,13 @@ import (
 	googleGrpc "google.golang.org/grpc"
 )
 
-type Interceptor struct{}
+type MetricsInterceptor struct{}
 
-func NewInterceptor() *Interceptor {
-	return &Interceptor{}
+func NewMetricsInterceptor() *MetricsInterceptor {
+	return &MetricsInterceptor{}
 }
 
-func (i *Interceptor) Intercept(ctx context.Context, req any, info *googleGrpc.UnaryServerInfo,
+func (i *MetricsInterceptor) Intercept(ctx context.Context, req any, info *googleGrpc.UnaryServerInfo,
 	handler googleGrpc.UnaryHandler,
 ) (any, error) {
 	start := time.Now()
@@ -27,7 +27,7 @@ func (i *Interceptor) Intercept(ctx context.Context, req any, info *googleGrpc.U
 	return resp, err
 }
 
-func (i *Interceptor) metrify(info *googleGrpc.UnaryServerInfo, err error, latencyInMs float64) {
+func (i *MetricsInterceptor) metrify(info *googleGrpc.UnaryServerInfo, err error, latencyInMs float64) {
 	metrics := endpointmetrics.Metrics{
 		Protocol: "GRPC",
 		Latency:  latencyInMs,

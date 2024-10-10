@@ -1,8 +1,11 @@
 package endpointmetrics
 
 import (
+	"context"
 	"fmt"
 	"net/http"
+
+	"github.com/johnfercher/medium-api/pkg/observability/log"
 
 	"github.com/johnfercher/medium-api/pkg/observability/metrics/countermetrics"
 	"github.com/johnfercher/medium-api/pkg/observability/metrics/histogrammetrics"
@@ -71,12 +74,13 @@ func Send(metrics Metrics) {
 	})
 }
 
-func Start() {
-	fmt.Println("starting prometheus")
+func Start(ctx context.Context) {
+	log.Info(ctx, "starting prometheus")
 	http.Handle("/metrics", promhttp.Handler())
 
 	go func() {
 		_ = http.ListenAndServe(":2112", nil)
 	}()
-	fmt.Println("started prometheus")
+
+	log.Info(ctx, "started prometheus")
 }
